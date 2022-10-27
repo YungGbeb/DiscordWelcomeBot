@@ -39,7 +39,7 @@ namespace DiscordWelcomeBot
 
             client = new DiscordSocketClient(socketConfig);
             //Handlers
-            client.MessageReceived += AddMsgToList;
+            client.MessageReceived += MessageReceivedHandler;
             client.UserJoined += JoinedUserHandler;
             client.ButtonExecuted += WelcomeButtonHandler;
             client.MessageDeleted += MessageDeleteHandler;
@@ -113,9 +113,8 @@ namespace DiscordWelcomeBot
 
 
 
-        private async Task AddMsgToList(SocketMessage message)
+        private async Task MessageReceivedHandler(SocketMessage message)
         {
-            Console.WriteLine("message received");
             var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
             if (message.Author.Id == Config.Get().botId && !greetingsMsg.Contains(message.Id))
             {
