@@ -132,7 +132,7 @@ namespace DiscordWelcomeBot
                 var mentionedUsers = msg.Value.MentionedUserIds;
                 if (mentionedUsers.Count == 1)
                 {
-                    pingCount.RemoveAll((pair) => pair.Key == mentionedUsers.Last());
+                    pingCount.RemoveAll((pair) => pair.Value == mentionedUsers.Last());
                 }
             }
         }
