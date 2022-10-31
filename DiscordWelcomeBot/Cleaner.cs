@@ -7,7 +7,7 @@ namespace cleaner
 {
     public class MessageCleaner
     {
-        public static void cleanerThread(ConcurrentPriorityQueue<Pair<ulong, DateTime>> pairs, DiscordSocketClient mainclient)
+        public static void cleanerThread(ConcurrentPriorityQueue<Message<ulong, DateTime>> pairs, DiscordSocketClient mainclient)
         {
             while (true)
             {
@@ -15,10 +15,10 @@ namespace cleaner
                 {
                     var mainChannel = mainclient.GetChannel(Config.Get().channelId) as SocketTextChannel;
                     var firstPair = pairs.First();
-                    DateTime firstDate = firstPair.Value;
+                    DateTime firstDate = firstPair.value;
                     if (firstDate < DateTime.Now)
                     {
-                        mainChannel.DeleteMessageAsync(firstPair.Key);
+                        mainChannel.DeleteMessageAsync(firstPair.key);
                         pairs.Dequeue();
                     }
                 }

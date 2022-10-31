@@ -16,7 +16,7 @@ namespace DiscordWelcomeBot
         //public vars definition
         DiscordSocketClient client;
         List<ulong> greetingsMsg;
-        ConcurrentPriorityQueue<Pair<ulong, DateTime>> msgdate;
+        ConcurrentPriorityQueue<Message<ulong, DateTime>> msgdate;
         List<KeyValuePair<ulong, ulong>> pingCount; 
         SocketTextChannel channel;
         //start Main method
@@ -25,7 +25,7 @@ namespace DiscordWelcomeBot
 
         private async Task MainAsync()
         {
-            msgdate = new ConcurrentPriorityQueue<Pair<ulong, DateTime>>();
+            msgdate = new ConcurrentPriorityQueue<Message<ulong, DateTime>>();
             greetingsMsg = new List<ulong>();
 
             pingCount = new List<KeyValuePair<ulong, ulong>>();
@@ -104,7 +104,7 @@ namespace DiscordWelcomeBot
             var lastMsg = (await channel.GetMessagesAsync(1).FlattenAsync()).FirstOrDefault().Id;
 
             var time = DateTime.Now;
-            var pair = new Pair<ulong, DateTime>(lastMsg, time.AddSeconds(Config.Get().withButtonDeleteAfter));
+            var pair = new Message<ulong, DateTime>(lastMsg, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
 
             msgdate.Enqueue(pair);
 
@@ -119,7 +119,7 @@ namespace DiscordWelcomeBot
             if (message.Author.Id == Config.Get().botId && !greetingsMsg.Contains(message.Id))
             {
                 var time = DateTime.Now;
-                var pair = new Pair<ulong, DateTime>(message.Id, time.AddSeconds(Config.Get().deleteAfter));
+                var pair = new Message<ulong, DateTime>(message.Id, time.AddSeconds(Config.Get().deleteAfter));
 
                 msgdate.Enqueue(pair);
             }

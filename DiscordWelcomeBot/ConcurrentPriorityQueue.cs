@@ -1,18 +1,42 @@
 ﻿using DotNetty.Common.Utilities;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Threading;
+using System.Collections.Generic;
+using Discord;
 
 namespace WelcomeBot
 {
-    public class Pair<T, K> : IComparable where K: IComparable
+    public enum Type
     {
-        public T Key;
-        public K Value;
-        public Pair(T Key, K Value)
+        BUTTON,
+        GIF
+    }
+
+    public interface IMessageType
+    {
+        Type GetMessageType();
+    }
+
+    public class Message<T, K> : IComparable, IMessageType where K : IComparable 
+    {
+
+
+        public T key;
+        public K value;
+        public Type type;
+
+        public Message(T key, K value, Type type = Type.GIF)
         {
-            this.Key = Key;
-            this.Value = Value;
+            this.key = key;
+            this.value = value;
+            this.type = type;
+        }
+
+        public Type GetMessageType()
+        {
+            return type;
         }
 
         public int CompareTo(object obj)
@@ -21,11 +45,36 @@ namespace WelcomeBot
             {
                 return 1;
             }
-            Pair<T, K> pair = obj as Pair<T, K>;
-            return pair.Value.CompareTo(this.Value);
+            Message<T, K> pair = obj as Message<T, K>;
+            return pair.value.CompareTo(value);
         }
     }
-    public class ConcurrentPriorityQueue<T> where T : class
+
+    public class Comparer<T> : IComparer<T> where T:IMessageType
+    {
+        public int Compare(T first, T second)
+        {
+            if (first.GetMessageType() == second.GetMessageType())
+            {
+                Console.WriteLine("second = first");
+                return ((new CaseInsensitiveComparer()).Compare(second, first));
+            }
+            if (first.GetMessageType() == Type.BUTTON)
+            {
+                Console.WriteLine("-1");
+                return 1;
+            }
+            if (first.GetMessageType() == Type.GIF)
+            {
+                Console.WriteLine("1");
+                return -1;
+            }
+
+            return ((new CaseInsensitiveComparer()).Compare(second, first));
+        }
+    }
+
+    public class ConcurrentPriorityQueue<T> where T : class, IMessageType
     {
         Mutex mutex;
 
@@ -33,7 +82,7 @@ namespace WelcomeBot
         public ConcurrentPriorityQueue()
         {
             mutex = new Mutex();
-            queue = new PriorityQueue<T>();
+            queue = new PriorityQueue<T>(new Comparer<T>());
         }
 
         public void Enqueue(T value)
@@ -65,6 +114,8 @@ namespace WelcomeBot
             mutex.ReleaseMutex();
             return valueCount;
         }
+
+        
 
         
     }
