@@ -22,7 +22,6 @@ namespace cleaner
                         pairs.Dequeue();
                     }
                 }
-
             }
         }
     }

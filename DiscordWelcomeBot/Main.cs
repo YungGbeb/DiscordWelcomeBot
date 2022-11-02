@@ -88,7 +88,6 @@ namespace DiscordWelcomeBot
             }
             else 
                 await component.DeferAsync();
-            
         }
 
         private async Task JoinedUserHandler(SocketGuildUser user)

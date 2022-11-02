@@ -21,8 +21,6 @@ namespace WelcomeBot
 
     public class Message<T, K> : IComparable, IMessageType where K : IComparable 
     {
-
-
         public T key;
         public K value;
         public Type type;
@@ -56,17 +54,14 @@ namespace WelcomeBot
         {
             if (first.GetMessageType() == second.GetMessageType())
             {
-                Console.WriteLine("second = first");
                 return ((new CaseInsensitiveComparer()).Compare(second, first));
             }
             if (first.GetMessageType() == Type.BUTTON)
             {
-                Console.WriteLine("-1");
                 return 1;
             }
             if (first.GetMessageType() == Type.GIF)
             {
-                Console.WriteLine("1");
                 return -1;
             }
 
@@ -114,9 +109,5 @@ namespace WelcomeBot
             mutex.ReleaseMutex();
             return valueCount;
         }
-
-        
-
-        
     }
 }
