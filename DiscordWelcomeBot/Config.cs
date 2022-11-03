@@ -45,6 +45,8 @@ namespace config
         [JsonProperty("WithButtonDeleteAfter")]
         public int withButtonDeleteAfter { get; set; }
 
+        [JsonProperty("EngChannelID")]
+        public ulong engChannelID { get; set; }
     }
 
     

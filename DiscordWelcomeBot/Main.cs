@@ -8,6 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using config;
 using WelcomeBot;
+using System.Reflection;
+using Discord.Interactions;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace DiscordWelcomeBot
 {
@@ -33,7 +37,7 @@ namespace DiscordWelcomeBot
             //give permission for bot
             var socketConfig = new DiscordSocketConfig
             {
-                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildMessages,
+                GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
                 MessageCacheSize = 100
             };
 
@@ -114,13 +118,26 @@ namespace DiscordWelcomeBot
 
         private async Task MessageReceivedHandler(SocketMessage message)
         {
-            var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-            if (message.Author.Id == Config.Get().botId && !greetingsMsg.Contains(message.Id))
+            if (message.Channel.Id == Config.Get().channelId)
             {
-                var time = DateTime.Now;
-                var pair = new Message<ulong, DateTime>(message.Id, time.AddSeconds(Config.Get().deleteAfter));
+                var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
+                if (message.Author.Id == Config.Get().botId && !greetingsMsg.Contains(message.Id))
+                {
+                    var time = DateTime.Now;
+                    var pair = new Message<ulong, DateTime>(message.Id, time.AddSeconds(Config.Get().deleteAfter));
 
-                msgdate.Enqueue(pair);
+                    msgdate.Enqueue(pair);
+                }
+            }
+
+            if (message.Channel.Id == Config.Get().engChannelID)
+            {
+                var messageString = message.CleanContent.ToString();
+
+                if (Regex.IsMatch(messageString, @"\p{IsCyrillic}"))
+                {
+                    await message.Channel.DeleteMessageAsync(message.Id);
+                }
             }
         }
 
