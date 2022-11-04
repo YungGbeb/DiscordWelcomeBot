@@ -101,17 +101,18 @@ namespace DiscordWelcomeBot
 
             var builder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
 
-            var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel; 
-            await channel.SendMessageAsync(Config.Get().greetings[randgreet] + user.Mention, components: builder.Build());
-
-            var lastMsg = (await channel.GetMessagesAsync(1).FlattenAsync()).FirstOrDefault().Id;
+            var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
+            var lastMsgId = channel.SendMessageAsync(Config.Get().greetings[randgreet] + user.Mention, components: builder.Build()).Result.Id;
 
             var time = DateTime.Now;
-            var pair = new Message<ulong, DateTime>(lastMsg, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
+            
+            var pair = new Message<ulong, DateTime>(lastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
 
             msgdate.Enqueue(pair);
 
-            greetingsMsg.Add(lastMsg);
+            greetingsMsg.Add(lastMsgId);
+            
+            
         }
 
 
