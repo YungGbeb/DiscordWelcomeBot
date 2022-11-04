@@ -111,8 +111,6 @@ namespace DiscordWelcomeBot
             msgdate.Enqueue(pair);
 
             greetingsMsg.Add(lastMsgId);
-            
-            
         }
 
 
