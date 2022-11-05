@@ -14,11 +14,18 @@ namespace cleaner
                 if (pairs.Count() > 0)
                 {
                     var mainChannel = mainclient.GetChannel(Config.Get().channelId) as SocketTextChannel;
+                    var engChannel = mainclient.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
                     var firstPair = pairs.First();
                     DateTime firstDate = firstPair.value;
                     if (firstDate < DateTime.Now)
                     {
-                        mainChannel.DeleteMessageAsync(firstPair.key);
+                        if (firstPair.channelLang == ChannelLang.MAIN)
+                        {
+                            mainChannel.DeleteMessageAsync(firstPair.key);
+                        }
+                        else
+                            engChannel.DeleteMessageAsync(firstPair.key);
+
                         pairs.Dequeue();
                     }
                 }

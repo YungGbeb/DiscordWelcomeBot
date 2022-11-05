@@ -14,6 +14,12 @@ namespace WelcomeBot
         GIF
     }
 
+    public enum ChannelLang
+    {
+        MAIN,
+        ENG
+    }
+
     public interface IMessageType
     {
         Type GetMessageType();
@@ -24,12 +30,14 @@ namespace WelcomeBot
         public T key;
         public K value;
         public Type type;
+        public ChannelLang channelLang;
 
-        public Message(T key, K value, Type type = Type.GIF)
+        public Message(T key, K value, Type type = Type.GIF, ChannelLang channelLang = ChannelLang.MAIN)
         {
             this.key = key;
             this.value = value;
             this.type = type;
+            this.channelLang = channelLang;
         }
 
         public Type GetMessageType()

@@ -71,6 +71,19 @@ namespace DiscordWelcomeBot
             var triggeredUser = component.User;
             var channel = client.GetChannel(component.Channel.Id) as SocketTextChannel;
             var mentionedUser = channel.GetUser(ulong.Parse(component.Data.CustomId)) as SocketGuildUser;
+            string greetString;
+            ChannelLang ChannelLanguage;
+
+            if (channel.Id == Config.Get().channelId)
+            {
+                greetString = ", Тебе привет от ";
+                ChannelLanguage = ChannelLang.MAIN;
+            }
+            else
+            {
+                greetString = ", greetings from ";
+                ChannelLanguage = ChannelLang.ENG;
+            }
 
             if (mentionedUser == null)
             {
@@ -88,7 +101,17 @@ namespace DiscordWelcomeBot
                 int randgif = random.Next(0, Config.Get().gifs.Count);
 
                 FileAttachment fileAttachment = new FileAttachment(Config.Get().gifs[randgif]);
-                await component.RespondWithFileAsync(fileAttachment, mentionedUser.Mention + ", Тебе привет от " + triggeredUser.Mention);
+
+                //await component.RespondWithFileAsync(fileAttachment, mentionedUser.Mention + greetString + triggeredUser.Mention);
+
+                var gifMessageId = channel.SendFileAsync(fileAttachment, mentionedUser.Mention + greetString + triggeredUser.Mention).Result.Id;
+
+                await component.DeferAsync();
+
+                var time = DateTime.Now;
+
+                var gifpair = new Message<ulong, DateTime>(gifMessageId, time.AddSeconds(Config.Get().deleteAfter), WelcomeBot.Type.GIF, ChannelLanguage);
+                msgdate.Enqueue(gifpair);
             }
             else 
                 await component.DeferAsync();
@@ -96,11 +119,6 @@ namespace DiscordWelcomeBot
 
         private async Task JoinedUserHandler(SocketGuildUser user)
         {
-            foreach (var item in Config.Get().rugreetings)
-            {
-                Console.WriteLine(item);
-            }
-
             Random random = new Random();
             int rurandgreet = random.Next(0, Config.Get().rugreetings.Count);
             int enrandgreet = random.Next(0, Config.Get().engreetings.Count);
@@ -116,37 +134,22 @@ namespace DiscordWelcomeBot
 
             var time = DateTime.Now;
             
-            var rupair = new Message<ulong, DateTime>(rulastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
-            var enpair = new Message<ulong, DateTime>(enlastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
+            var rupair = new Message<ulong, DateTime>(rulastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON, ChannelLang.MAIN);
+            var enpair = new Message<ulong, DateTime>(enlastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON, ChannelLang.ENG);
 
             msgdate.Enqueue(rupair);
             msgdate.Enqueue(enpair);
-
-            greetingsMsg.Add(rulastMsgId);
-            greetingsMsg.Add(enlastMsgId);
         }
 
 
 
         private async Task MessageReceivedHandler(SocketMessage message)
         {
-            if (message.Channel.Id == Config.Get().channelId)
-            {
-                var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-                if (message.Author.Id == Config.Get().botId && !greetingsMsg.Contains(message.Id))
-                {
-                    var time = DateTime.Now;
-                    var pair = new Message<ulong, DateTime>(message.Id, time.AddSeconds(Config.Get().deleteAfter));
-
-                    msgdate.Enqueue(pair);
-                }
-            }
-
             if (message.Channel.Id == Config.Get().engChannelID)
             {
                 var messageString = message.CleanContent.ToString();
 
-                if (Regex.IsMatch(messageString, @"\p{IsCyrillic}"))
+                if (Regex.IsMatch(messageString, @"\p{IsCyrillic}") && !message.Author.IsBot)
                 {
                     await message.Channel.DeleteMessageAsync(message.Id);
                 }
