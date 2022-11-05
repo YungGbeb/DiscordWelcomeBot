@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 COPY --from=build-env /DiscordWelcomeBot/DiscordWelcomeBot/bin/Release/netcoreapp3.1 netcoreapp3.1/
 
 COPY --from=build-env /config.ini  netcoreapp3.1/config.ini
-COPY --from=build-env DiscordWelcomeBot/res/ netcoreapp3.1/res/
+COPY --from=build-env /DiscordWelcomeBot/DiscordWelcomeBot/res/ netcoreapp3.1/res/
 
 WORKDIR /netcoreapp3.1
 

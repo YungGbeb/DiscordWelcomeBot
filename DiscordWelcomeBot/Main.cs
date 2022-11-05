@@ -69,7 +69,7 @@ namespace DiscordWelcomeBot
         public async Task WelcomeButtonHandler(SocketMessageComponent component)
         {
             var triggeredUser = component.User;
-            var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
+            var channel = client.GetChannel(component.Channel.Id) as SocketTextChannel;
             var mentionedUser = channel.GetUser(ulong.Parse(component.Data.CustomId)) as SocketGuildUser;
 
             if (mentionedUser == null)
@@ -97,20 +97,27 @@ namespace DiscordWelcomeBot
         private async Task JoinedUserHandler(SocketGuildUser user)
         {
             Random random = new Random();
-            int randgreet = random.Next(0, Config.Get().greetings.Count);
+            int randgreet = random.Next(0, Config.Get().rugreetings.Count);
 
-            var builder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
+            var rubuilder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
+            var enbuilder = new ComponentBuilder().WithButton("Hello!", user.Id.ToString());
 
-            var channel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-            var lastMsgId = channel.SendMessageAsync(Config.Get().greetings[randgreet] + user.Mention, components: builder.Build()).Result.Id;
+            var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
+            var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[randgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
+            
+            var enchannel = client.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
+            var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[randgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
 
             var time = DateTime.Now;
             
-            var pair = new Message<ulong, DateTime>(lastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
+            var rupair = new Message<ulong, DateTime>(rulastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
+            var enpair = new Message<ulong, DateTime>(enlastMsgId, time.AddSeconds(Config.Get().withButtonDeleteAfter), WelcomeBot.Type.BUTTON);
 
-            msgdate.Enqueue(pair);
+            msgdate.Enqueue(rupair);
+            msgdate.Enqueue(enpair);
 
-            greetingsMsg.Add(lastMsgId);
+            greetingsMsg.Add(rulastMsgId);
+            greetingsMsg.Add(enlastMsgId);
         }
 
 

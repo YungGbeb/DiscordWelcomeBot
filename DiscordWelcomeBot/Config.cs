@@ -33,8 +33,11 @@ namespace config
         [JsonProperty("BotSelfID")]
         public ulong botId { get; set; }
 
-        [JsonProperty("Greetings")]
-        public List<string> greetings { get; set; }
+        [JsonProperty("RuGreetings")]
+        public List<string> rugreetings { get; set; }
+
+        [JsonProperty("EnGreetings")]
+        public List<string> engreetings { get; set; }
 
         [JsonProperty("Gifs")]
         public List<string> gifs { get; set; }
