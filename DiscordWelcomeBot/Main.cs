@@ -96,17 +96,23 @@ namespace DiscordWelcomeBot
 
         private async Task JoinedUserHandler(SocketGuildUser user)
         {
+            foreach (var item in Config.Get().rugreetings)
+            {
+                Console.WriteLine(item);
+            }
+
             Random random = new Random();
-            int randgreet = random.Next(0, Config.Get().rugreetings.Count);
+            int rurandgreet = random.Next(0, Config.Get().rugreetings.Count);
+            int enrandgreet = random.Next(0, Config.Get().engreetings.Count);
 
             var rubuilder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
             var enbuilder = new ComponentBuilder().WithButton("Hello!", user.Id.ToString());
 
             var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-            var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[randgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
+            var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
             
             var enchannel = client.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
-            var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[randgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
+            var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[enrandgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
 
             var time = DateTime.Now;
             
