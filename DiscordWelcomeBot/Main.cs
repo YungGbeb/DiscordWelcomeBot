@@ -102,8 +102,6 @@ namespace DiscordWelcomeBot
 
                 FileAttachment fileAttachment = new FileAttachment(Config.Get().gifs[randgif]);
 
-                //await component.RespondWithFileAsync(fileAttachment, mentionedUser.Mention + greetString + triggeredUser.Mention);
-
                 var gifMessageId = channel.SendFileAsync(fileAttachment, mentionedUser.Mention + greetString + triggeredUser.Mention).Result.Id;
 
                 await component.DeferAsync();
@@ -126,11 +124,17 @@ namespace DiscordWelcomeBot
             var rubuilder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
             var enbuilder = new ComponentBuilder().WithButton("Hello!", user.Id.ToString());
 
+            //var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
+            //var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
+            
+            //var enchannel = client.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
+            //var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[enrandgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
+
             var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-            var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
+            var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + user.Mention, components: rubuilder.Build()).Result.Id;
             
             var enchannel = client.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
-            var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[enrandgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
+            var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[enrandgreet] + user.Mention, components: enbuilder.Build()).Result.Id;
 
             var time = DateTime.Now;
             
@@ -147,9 +151,9 @@ namespace DiscordWelcomeBot
         {
             if (message.Channel.Id == Config.Get().engChannelID)
             {
-                var messageString = message.CleanContent.ToString();
+                var messageString = message.Content.ToString();
 
-                if (Regex.IsMatch(messageString, @"\p{IsCyrillic}") && !message.Author.IsBot)
+                if (Regex.IsMatch(messageString, @"\P{IsCyrillic}") && !message.Author.IsBot)
                 {
                     await message.Channel.DeleteMessageAsync(message.Id);
                 }
@@ -161,7 +165,7 @@ namespace DiscordWelcomeBot
             if (msg.Value.Author.Id == Config.Get().botId)
             {
                 var mentionedUsers = msg.Value.MentionedUserIds;
-                if (mentionedUsers.Count == 1)
+                if (mentionedUsers.Count >= 1)
                 {
                     pingCount.RemoveAll((pair) => pair.Value == mentionedUsers.Last());
                 }
