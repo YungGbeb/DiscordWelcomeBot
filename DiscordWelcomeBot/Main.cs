@@ -124,12 +124,6 @@ namespace DiscordWelcomeBot
             var rubuilder = new ComponentBuilder().WithButton("Привет!", user.Id.ToString());
             var enbuilder = new ComponentBuilder().WithButton("Hello!", user.Id.ToString());
 
-            //var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
-            //var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + " __**" + user.Username + "**__", components: rubuilder.Build()).Result.Id;
-            
-            //var enchannel = client.GetChannel(Config.Get().engChannelID) as SocketTextChannel;
-            //var enlastMsgId = enchannel.SendMessageAsync(Config.Get().engreetings[enrandgreet] + " __**" + user.Username + "**__", components: enbuilder.Build()).Result.Id;
-
             var ruchannel = client.GetChannel(Config.Get().channelId) as SocketTextChannel;
             var rulastMsgId = ruchannel.SendMessageAsync(Config.Get().rugreetings[rurandgreet] + user.Mention, components: rubuilder.Build()).Result.Id;
             
